@@ -1,0 +1,44 @@
+name: IslandWalker
+options:
+  bundleIdPrefix: com.custompet.walker
+  deploymentTarget:
+    iOS: "16.2"
+
+targets:
+  IslandWalker:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.2"
+    sources:
+      - path: Shared
+      - path: IslandWalkerApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.custompet.walker.app
+        INFOPLIST_FILE: IslandWalkerApp/Info.plist
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGNING_ALLOWED: "NO"
+        CODE_SIGNING_REQUIRED: "NO"
+        CODE_SIGN_IDENTITY: ""
+        ENABLE_PREVIEWS: "NO"
+    dependencies:
+      - target: IslandWalkerWidgetExtension
+        embed: true
+        codeSign: false
+
+  IslandWalkerWidgetExtension:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "16.2"
+    sources:
+      - path: Shared
+      - path: IslandWalkerWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.custompet.walker.app.widget
+        INFOPLIST_FILE: IslandWalkerWidget/Info.plist
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGNING_ALLOWED: "NO"
+        CODE_SIGNING_REQUIRED: "NO"
+        CODE_SIGN_IDENTITY: ""
+        SKIP_INSTALL: "YES"

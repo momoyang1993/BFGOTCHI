@@ -1,0 +1,43 @@
+name: Build IslandWalker Unsigned IPA (Windows Sideloadly Ready)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+    steps:
+      - name: 1. Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 2. Install XcodeGen & Generate Dual-Target Project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: 3. Compile Main App + WidgetExtension for iOS Device (Unsigned)
+        run: |
+          xcodebuild build \
+            -project IslandWalker.xcodeproj \
+            -scheme IslandWalker \
+            -configuration Release \
+            -sdk iphoneos \
+            CONFIGURATION_BUILD_DIR="${GITHUB_WORKSPACE}/build" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: 4. Verify WidgetExtension is Embedded & Package .ipa
+        run: |
+          mkdir -p Payload
+          cp -r "${GITHUB_WORKSPACE}/build/IslandWalker.app" Payload/
+          ls -la "Payload/IslandWalker.app/PlugIns"
+          zip -r "IslandWalker-池鷗-unsigned.ipa" Payload
+
+      - name: 5. Upload Ready-to-Sideload .ipa Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: IslandWalker-IPA-For-Windows-Sideloadly
+          path: "IslandWalker-池鷗-unsigned.ipa"
